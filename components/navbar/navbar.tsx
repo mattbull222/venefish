@@ -1,8 +1,9 @@
 import { NavbarMobile } from "@/components/navbar/navbar-mobile";
 import { NavbarUserLinks } from "@/components/navbar/navbar-user-links";
 import { buttonVariants } from "@/components/ui/button";
-import { FishIcon, ScanTextIcon } from "lucide-react";
+import { ScanTextIcon } from "lucide-react"; // Removed FishIcon
 import Link from "next/link";
+import Image from "next/image"; // Import the Image component
 import { FC } from "react";
 
 export const NavBar: FC = () => {
@@ -13,24 +14,23 @@ export const NavBar: FC = () => {
           <div className="flex items-center">
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <div className="flex items-center">
-                <FishIcon className="w-8 h-8 mr-2 inline" />{" "}
-                <span className="text-xl font-semibold tracking-tighter text-slate-800 mr-6">
-                  Venefish
+                {/* Replaced FishIcon with your logo */}
+                <div className="relative w-8 h-8 mr-2">
+                  {/* <Image
+                    src="/logowhite.png"
+                    alt="AutoTBooker Logo"
+                    fill
+                    className="object-contain"
+                    priority // Ensures the logo loads immediately as it's above the fold
+                  /> */}
+                </div>
+                <span className="text-xl font-semibold tracking-tighter text-white-800 mr-6">
+                  AutoTBooker
                 </span>
               </div>
             </Link>
             <div className="hidden md:flex justify-between grow">
-              <div>
-                <Link href="#1" className={buttonVariants({ variant: "link" })}>
-                  Item 1
-                </Link>
-                <Link href="#2" className={buttonVariants({ variant: "link" })}>
-                  Item 2
-                </Link>
-                <Link href="#3" className={buttonVariants({ variant: "link" })}>
-                  Item 3
-                </Link>
-              </div>
+              <div />
               <div className="flex items-center space-x-4">
                 <NavbarUserLinks />
               </div>

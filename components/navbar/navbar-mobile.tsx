@@ -21,7 +21,7 @@ export const NavbarMobile = () => {
             <NavigationMenuTrigger className="-mr-4">
               <MenuIcon />
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="flex flex-col p-1">
+            {/* <NavigationMenuContent className="flex flex-col p-1">
               <NavigationMenuLink
                 href="#1"
                 className={buttonVariants({ variant: "link" })}
@@ -43,7 +43,7 @@ export const NavbarMobile = () => {
               <div className="flex flex-col mb-0.5">
                 <NavbarUserLinks />
               </div>
-            </NavigationMenuContent>
+            </NavigationMenuContent> */}
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
