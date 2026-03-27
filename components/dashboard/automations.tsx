@@ -20,7 +20,7 @@ import { ShieldCheck, Plus, X, Info } from "lucide-react";
 
 type Player = {
   name: string;
-  membershipTier: string; // Kept internal name for backend compatibility
+  membershipTier: string; 
   bookingWindowDays: number;
 };
 
@@ -29,7 +29,7 @@ export const BookARound: FC = () => {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    clubUrl: "",
+    clubSubdomain: "", // Changed from clubUrl to reflect partial input
     miclubUser: "",
     miclubPass: "",
     occurrence: "Weekly",
@@ -77,9 +77,14 @@ export const BookARound: FC = () => {
     setLoading(true);
 
     try {
+      // --- FINAL URL CONSTRUCTION ---
+      const cleanSubdomain = formData.clubSubdomain.trim().toLowerCase().replace(/^(https?:\/\/)/, "").split('.')[0];
+      const finalUrl = `https://${cleanSubdomain}.miclub.com.au`;
+
       const payload = {
         userId: user.uid,
         ...formData,
+        clubUrl: finalUrl, // The backend still expects the full URL
         players: players,
         isActive: true,
         createdAt: serverTimestamp(),
@@ -134,14 +139,23 @@ export const BookARound: FC = () => {
                   
                   <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="clubUrl">MiClub URL</Label>
-                      <Input 
-                        id="clubUrl" 
-                        placeholder="e.g. sandhurst.miclub.com.au"
-                        value={formData.clubUrl}
-                        onChange={e => setFormData({...formData, clubUrl: e.target.value})}
-                        required 
-                      />
+                      <Label htmlFor="clubSubdomain">MiClub URL (please ensure exact spelling)</Label>
+                      <div className="flex items-center shadow-sm">
+                        <span className="flex h-10 items-center rounded-l-md border border-r-0 bg-muted px-3 text-sm text-muted-foreground">
+                          https://
+                        </span>
+                        <Input 
+                          id="clubSubdomain" 
+                          placeholder="sandhurst"
+                          className="rounded-none border focus-visible:ring-0 focus-visible:ring-offset-0"
+                          value={formData.clubSubdomain}
+                          onChange={e => setFormData({...formData, clubSubdomain: e.target.value})}
+                          required 
+                        />
+                        <span className="flex h-10 items-center rounded-r-md border border-l-0 bg-muted px-3 text-sm text-muted-foreground">
+                          .miclub.com.au
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -364,7 +378,6 @@ export const BookARound: FC = () => {
                     </div>
                   </div>
 
-                  {/* Dynamic Execution Summary */}
                   <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-md flex items-start gap-3">
                     <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-blue-800 dark:text-blue-300">

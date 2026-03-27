@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "reactfire";
+import { Loader2, Rocket } from "lucide-react"; // Added for better UX
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -32,6 +33,7 @@ interface SignUpFormProps {
 
 export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,22 +43,42 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
     },
   });
 
-  const auth = useAuth();
-
   const signup = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-      if (user?.user.uid && user.user.email) {
-        // create user in firestore here if you want
-        toast({ title: "Account created!" });
-        onSignUp?.();
+      
+      // 1. Create Firebase User
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      if (user?.uid) {
+        toast({ title: "Account created!", description: "Redirecting to secure trial setup..." });
+
+        // 2. Call your Cloud Function or API route to get Stripe URL
+        // Replace with your actual endpoint URL
+        const response = await fetch('/api/create-subscription-trial', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            uid: user.uid,
+            email: user.email 
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          // 3. Send them to Stripe to start the 14-day trial
+          window.location.href = data.url;
+        } else {
+          toast({ variant: "destructive", title: "Checkout Error", description: "Failed to load payment portal." });
+        }
       }
     } catch (err: any) {
-      if ("code" in err && err.code.includes("already")) {
-        toast({ title: "User already exists" });
+      if (err.code?.includes("already")) {
+        toast({ title: "User already exists", description: "Try signing in instead." });
       } else {
-        toast({ title: "Error signing up", description: `${err}` });
+        toast({ variant: "destructive", title: "Error signing up", description: err.message });
       }
     } finally {
       setIsLoading(false);
@@ -65,6 +87,13 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
 
   return (
     <>
+      <div className="mb-6 space-y-2">
+        <h3 className="text-2xl font-bold">Start Your 14-Day Free Trial</h3>
+        <p className="text-sm text-muted-foreground">
+          Deploy your first golf sniper in minutes. No charges for 2 weeks.
+        </p>
+      </div>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(signup)}>
           <fieldset disabled={isLoading} className="space-y-4">
@@ -75,11 +104,8 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
                 <FormItem>
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} />
+                    <Input placeholder="matt@example.com" type="email" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    A valid email is required to watch locked specials.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -94,21 +120,33 @@ export const SignUpForm: FC<SignUpFormProps> = ({ onShowLogin, onSignUp }) => {
                     <Input type="password" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Must be at least 8 characters long.
+                    Choose a secure password (min 8 characters).
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Sign Up</Button>
+            <Button type="submit" className="w-full" size="lg">
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Securing Trial...
+                </>
+              ) : (
+                <>
+                  <Rocket className="mr-2 h-4 w-4" />
+                  Begin 2-Week Free Trial
+                </>
+              )}
+            </Button>
           </fieldset>
         </form>
       </Form>
 
-      <p className="mt-4 text-sm">
-        Already joined?{" "}
-        <Button variant="link" onClick={onShowLogin}>
-          Sign in instead.
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Button variant="link" className="p-0 h-auto" onClick={onShowLogin}>
+          Sign in here.
         </Button>
       </p>
     </>
