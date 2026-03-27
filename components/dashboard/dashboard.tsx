@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Image from "next/image";
-import { MainNav } from "@/components/demo-dashboard/main-nav";
-import { RecentSales } from "@/components/demo-dashboard/recent-sales";
+import { MainNav } from "@/components/dashboard/main-nav";
+import { RecentRounds } from "@/components/dashboard/recent-rounds";
 import {
   Card,
   CardHeader,
@@ -10,7 +10,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 
-export const DemoDashboard: FC = () => {
+export const Dashboard: FC = () => {
   return (
     <>
       <div className="md:hidden">
@@ -145,19 +145,19 @@ export const DemoDashboard: FC = () => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
               <CardHeader>
-                <CardTitle>Overview</CardTitle>
+                <CardTitle>Upcoming Rounds</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">{/* <Overview /> */}</CardContent>
             </Card>
             <Card className="col-span-3">
               <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
+                <CardTitle>Recent Rounds</CardTitle>
                 <CardDescription>
-                  You made 265 sales this month.
+                  You've successfully booked 4 rounds using AutoTeeBooker!
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <RecentSales />
+                <RecentRounds/>
               </CardContent>
             </Card>
           </div>
