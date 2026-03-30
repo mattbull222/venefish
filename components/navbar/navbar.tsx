@@ -15,9 +15,9 @@ export const NavBar: FC = () => {
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <div className="flex items-center">
                 {/* Replaced FishIcon with your logo */}
-                <div className="relative w-8 h-8 mr-2">
+                <div className="relative w-20 h-30 mr-2">
                   {/* <Image
-                    src="/logowhite.png"
+                    src="/autoteebooker-logo.png"
                     alt="AutoTBooker Logo"
                     fill
                     className="object-contain"
@@ -25,7 +25,7 @@ export const NavBar: FC = () => {
                   /> */}
                 </div>
                 <span className="text-xl font-semibold tracking-tighter text-white-800 mr-6">
-                  AutoTBooker
+                  AutoTeeBooker
                 </span>
               </div>
             </Link>
